@@ -27,7 +27,6 @@ class DocumentAnalysisView(views.APIView):
         for page in doc:
             text += page.get_text()
 
-
         # Define patterns for phone numbers and email addresses
         phone_number_pattern = r"\b(?:\d[ -]?)?(?:(?:\(\d{3}\)|\d{3})[ -]?)?\d{3}[ -]?\d{4}\b"
         email_pattern = r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b"
@@ -39,6 +38,10 @@ class DocumentAnalysisView(views.APIView):
         # Process text to find nouns and verbs
         tokens = word_tokenize(text)
         tagged_tokens = pos_tag(tokens)
+
+        # Remove tokens containing special characters including underscores
+        cleaned_tokens = [word for word, tag in tagged_tokens if not re.match(r'^[^\w\s]+$', word)]
+
         nouns = ", ".join([word for word, tag in tagged_tokens if tag.startswith("NN")])
         verbs = ", ".join([word for word, tag in tagged_tokens if tag.startswith("VB")])
 
@@ -46,7 +49,7 @@ class DocumentAnalysisView(views.APIView):
         serializer = DocumentAnalysisSerializer(
             data={
                 "email": request.data.get("email"),
-                "content": text,
+                "content": ' '.join(cleaned_tokens),
                 "nouns": nouns,
                 "verbs": verbs,
             }
