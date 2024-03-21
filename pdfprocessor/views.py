@@ -30,6 +30,7 @@ class DocumentAnalysisView(views.APIView):
         # Define patterns for phone numbers and email addresses
         phone_number_pattern = r"\b(?:\d[ -]?)?(?:(?:\(\d{3}\)|\d{3})[ -]?)?\d{3}[ -]?\d{4}\b"
         email_pattern = r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b"
+            
 
         # Remove phone numbers and email addresses from the text
         text = re.sub(phone_number_pattern, "", text)
@@ -39,6 +40,8 @@ class DocumentAnalysisView(views.APIView):
         tokens = word_tokenize(text)
         tagged_tokens = pos_tag(tokens)
 
+
+      
         # Remove tokens containing special characters including underscores
         cleaned_tokens = [word for word, tag in tagged_tokens if not re.match(r'^[^\w\s]+$', word)]
 
